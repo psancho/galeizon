@@ -4,14 +4,16 @@ declare(strict_types=1);
 namespace Psancho\Galeizon\Model;
 
 use ErrorException;
-use Psancho\Galeizon\Model\Conf\Database;
-use Psancho\Galeizon\Model\Conf\Monolog;
+use Psancho\Galeizon\Model\Conf\Database as ConfDatabase;
+use Psancho\Galeizon\Model\Conf\Mailer as ConfMailer;
+use Psancho\Galeizon\Model\Conf\Monolog as ConfMonolog;
 use Psancho\Galeizon\Pattern\Singleton;
 
 class Conf extends Singleton
 {
-    public protected(set) ?Database $database = null;
-    public protected(set) ?Monolog $monolog = null;
+    public protected(set) ?ConfDatabase $database = null;
+    public protected(set) ?ConfMailer $mailer = null;
+    public protected(set) ?ConfMonolog $monolog = null;
 
     #[\Override]
     protected function build(): void
@@ -37,14 +39,17 @@ class Conf extends Singleton
     {
         if (property_exists($raw, 'auth') && is_object($raw->auth)) {}
         if (property_exists($raw, 'database') && is_object($raw->database)) {
-            $this->database = Database::fromObject($raw->database);
+            $this->database = ConfDatabase::fromObject($raw->database);
         }
         if (property_exists($raw, 'mailer') && is_object($raw->mailer)) {}
-        $this->monolog = Monolog::fromObject(
+        $this->monolog = ConfMonolog::fromObject(
             property_exists($raw, 'monolog') && is_object($raw->monolog)
             ? $raw->monolog
             : null
         );
+        if (property_exists($raw, 'mailer') && is_object($raw->mailer)) {
+            $this->mailer = ConfMailer::fromObject($raw->mailer);
+        }
         if (property_exists($raw, 'self') && is_object($raw->self)) {}
         if (property_exists($raw, 'slim') && is_object($raw->slim)) {}
     }

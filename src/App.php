@@ -5,9 +5,11 @@ namespace Psancho\Galeizon;
 
 use ErrorException;
 use PDO;
+use Psancho\Galeizon\Adapter\MailerAdapter;
 use Psancho\Galeizon\Model\Conf;
 use Psancho\Galeizon\Model\Database\Connection;
 use Psancho\Galeizon\Pattern\Singleton;
+use Symfony\Component\Mime\Email;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -22,6 +24,18 @@ class App extends Singleton
         self::threatErrorAsException();
         $this->conf = Conf::getInstance();
         $this->dbCnx = Connection::getInstance($this->conf->database);
+        self::caca();
+    }
+
+    protected static function caca(): void
+    {
+        $email = (new Email())
+        ->subject('test email')
+        ->from('psancho13@gmail.com')
+        ->html('<body><p>youhou</p></body>')
+        ->to('tcho@club-internet.fr');
+
+        MailerAdapter::getInstance()->send($email);
     }
 
     protected static function threatErrorAsException(): void
