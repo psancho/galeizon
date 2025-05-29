@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Psancho\Galeizon\Adapter;
 
@@ -44,9 +45,9 @@ class LogAdapter extends Singleton
     protected $systems = [];
     protected Level $logLevel;// @phpstan-ignore property.uninitialized
 
-    protected const SYSTEM_FILES = 'files';
-    protected const SYSTEM_STDOUT = 'stdout';
-    protected const SYSTEMS = [self::SYSTEM_FILES, self::SYSTEM_STDOUT];
+    protected const string SYSTEM_FILES = 'files';
+    protected const string SYSTEM_STDOUT = 'stdout';
+    protected const array SYSTEMS = [self::SYSTEM_FILES, self::SYSTEM_STDOUT];
 
     #[\Override]
     protected function build(): void
