@@ -1,0 +1,55 @@
+# les librairies correspondantes sont requises dans le composer.json
+includes:
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+
+parameters:
+    level: 10
+    phpVersion: 80400
+
+    treatPhpDocTypesAsCertain: false
+
+    # typeAliases:
+    #     Name: 'string'
+    #     NameResolver: 'callable(): string'
+    #     NameOrResolver: 'Name|NameResolver'
+
+    # stricter analysis (https://phpstan.org/config-reference#stricter-analysis)
+    checkBenevolentUnionTypes: true
+    checkImplicitMixed: true
+    checkMissingCallableSignature: true
+    checkMissingOverrideMethodAttribute: true # php 80300
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
+    checkUninitializedProperties: true
+    rememberPossiblyImpureFunctionValues: false
+    reportAlwaysTrueInLastCondition: true
+    reportAnyTypeWideningInVarTag: true
+    reportPossiblyNonexistentConstantArrayOffset: true
+    # reportPossiblyNonexistentGeneralArrayOffset: true
+
+    strictRules:
+        # allRules: false
+        # booleansInConditions: false
+        # closureUsesThis: false
+        # disallowedBacktick: false
+        # disallowedEmpty: false
+        # disallowedImplicitArrayCreation: false
+        # disallowedLooseComparison: false
+        disallowedShortTernary: false
+        # dynamicCallOnStaticMethod: false
+        # illegalConstructorMethodCall: false
+        # matchingInheritedMethodNames: false
+        # noVariableVariables: false
+        # numericOperandsInArithmeticOperators: false
+        # overwriteVariablesWithLoop: false
+        # requireParentConstructorCall: false
+        # strictArrayFilter: false
+        # strictFunctionCalls: false
+        # switchConditionsMatchingType: false
+        # uselessCast: false
+
+    paths:
+        - src
+    excludePaths:
+        analyseAndScan:
+            - _*

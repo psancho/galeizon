@@ -1,0 +1,20 @@
+{
+    "name": "psancho/galeizon",
+    "description": "Framework PHP",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Psancho\\Galeizon\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.4",
+        "monolog/monolog": "^3"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2",
+        "phpstan/phpstan-deprecation-rules": "^2",
+        "phpstan/phpstan-strict-rules": "^2",
+        "phpunit/phpunit": "^10"
+    }
+}
