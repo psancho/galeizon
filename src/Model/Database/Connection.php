@@ -34,8 +34,8 @@ class Connection
         $dsn = $conf->dsn;
         if (array_key_exists($dsn, self::$_pdo)) {
             return;
-        } else if (is_null($conf->crud)) {
-            throw new ConnectionException("No_DB_crud");
+        } else if (is_null($conf->credentials)) {
+            throw new ConnectionException("No_DB_credentials");
 
         }
 
@@ -69,7 +69,7 @@ class Connection
             }
         }
 
-        self::$_pdo[$dsn] = new PDO($dsn, $conf->crud->login, $conf->crud->password, $driverOptions);
+        self::$_pdo[$dsn] = new PDO($dsn, $conf->credentials->login, $conf->credentials->password, $driverOptions);
 
         foreach ($otherOptions as $option => $value) {
             self::$_pdo[$dsn]->setAttribute($option, $value);

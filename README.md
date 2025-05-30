@@ -69,6 +69,48 @@ Example of `config.jdon` snippet:
 },
 ```
 
+## Migrations
+
+Galeizon is based on doctrine/migrations lib.
+
+Specific settings may be set in `config.json` to override default values (shown here).
+
+```json
+"database": {
+    "dsn": "mysql:host=myHost;port=3306;dbname=myDb;charset=utf8",
+    "migrations": {
+        "namespace": "Psancho\\Galeizon\\Migrations",
+        "directory": "./migrations",
+        "credentials": {
+            "login": "myLogin",
+            "password": "myPwd"
+        }
+    }
+},
+```
+
+### Usage
+
+```sh
+# list of available commands
+vendor/bin/galeizon-migrations
+
+# help for a command
+vendor/bin/galeizon-migrations help status
+
+# show status
+vendor/bin/galeizon-migrations status
+```
+
+__NOTE__: autoExit MUST be OFF before cli is invoked programmatically.
+
+```php
+$exitCode = MigrationsAdapter::getInstance()->resetAutoExit()->run('myCommand');
+if ($exitCode) {
+    // error handling
+}
+```
+
 ## Developping
 
 the best way to contribute to code is working on feature branch (ie. `my_feature_branch`) and ensure that composer will update right dependencies.

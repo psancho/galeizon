@@ -5,21 +5,21 @@ namespace Psancho\Galeizon\Model\Conf;
 
 class Database
 {
+    public protected(set) ?Credentials $credentials = null;
     public protected(set) string $dsn = '';
-    public protected(set) ?Credentials $crud = null;
-    public protected(set) ?Credentials $admin = null;
+    public protected(set) ?Migrations $migrations = null;
 
     public static function fromObject(object $raw): self
     {
         $typed = new self;
+        if (property_exists($raw, 'credentials') && is_object($raw->credentials)) {
+            $typed->credentials = Credentials::fromObject($raw->credentials);
+        }
         if (property_exists($raw, 'dsn') && is_string($raw->dsn)) {
             $typed->dsn = trim($raw->dsn);
         }
-        if (property_exists($raw, 'crud') && is_object($raw->crud)) {
-            $typed->crud = Credentials::fromObject($raw->crud);
-        }
-        if (property_exists($raw, 'admin') && is_object($raw->admin)) {
-            $typed->admin = Credentials::fromObject($raw->admin);
+        if (property_exists($raw, 'migrations') && is_object($raw->migrations)) {
+            $typed->migrations = Migrations::fromObject($raw->migrations);
         }
         return $typed;
     }

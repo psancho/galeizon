@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+declare(strict_types=1);
+
+use Psancho\Galeizon\Adapter\MigrationsAdapter;
+
+require dirname(__DIR__) . '/src/App.php';
+
+$go = microtime(true);
+
+try {
+    MigrationsAdapter::getInstance()->run();
+
+} catch (Throwable $e) {
+    echo $e;
+} finally {
+    $duration = microtime(true) - $go;
+    printf("\n...terminé après %.3f s\n", $duration);
+}
