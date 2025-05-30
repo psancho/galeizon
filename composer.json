@@ -7,6 +7,9 @@
             "Psancho\\Galeizon\\": "src/"
         }
     },
+    "bin": [
+        "bin/galeizon-migrations"
+    ],
     "require": {
         "php": "^8.4",
         "doctrine/migrations": "^3",
