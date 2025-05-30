@@ -24,6 +24,7 @@ class App extends Singleton
         self::threatErrorAsException();
         $this->conf = Conf::getInstance();
         $this->dbCnx = Connection::getInstance($this->conf->database);
+        // TODO contrôle des assertions à partir de la config
     }
 
     protected static function threatErrorAsException(): void

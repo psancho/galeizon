@@ -14,6 +14,7 @@ class Conf extends Singleton
     public protected(set) ?ConfDatabase $database = null;
     public protected(set) ?ConfMailer $mailer = null;
     public protected(set) ?ConfMonolog $monolog = null;
+    // TODO config dev spécifique, comprenant entre autres les assertions, self, etc..
 
     #[\Override]
     protected function build(): void
