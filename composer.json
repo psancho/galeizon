@@ -20,7 +20,8 @@
         "slim/slim": "^4",
         "symfony/console": "^7",
         "symfony/mailer": "^7",
-        "tuupola/base62": "^2"
+        "tuupola/base62": "^2",
+        "roave/better-reflection": "^6.59"
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^7",
