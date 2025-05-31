@@ -14,10 +14,16 @@
         "php": "^8.4",
         "doctrine/migrations": "^3",
         "monolog/monolog": "^3",
+        "nyholm/psr7": "^1",
+        "nyholm/psr7-server": "^1",
+        "slim/http": "^1",
+        "slim/slim": "^4",
         "symfony/console": "^7",
-        "symfony/mailer": "^7"
+        "symfony/mailer": "^7",
+        "tuupola/base62": "^2"
     },
     "require-dev": {
+        "guzzlehttp/guzzle": "^7",
         "phpstan/phpstan": "^2",
         "phpstan/phpstan-deprecation-rules": "^2",
         "phpstan/phpstan-strict-rules": "^2",
