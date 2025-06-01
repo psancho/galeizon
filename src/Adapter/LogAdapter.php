@@ -53,7 +53,6 @@ class LogAdapter extends Singleton
     protected function build(): void
     {
         $conf = Conf::getInstance()->monolog;
-        assert($conf instanceof ConfMonolog);
         $this->logLevel = self::_toMonologLevel($conf->level, Level::Debug);
         $this->systems = self::_parseSystemsConf($conf->systems);
 

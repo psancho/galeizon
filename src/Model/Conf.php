@@ -5,15 +5,19 @@ namespace Psancho\Galeizon\Model;
 
 use ErrorException;
 use Psancho\Galeizon\Model\Conf\Database as ConfDatabase;
+use Psancho\Galeizon\Model\Conf\Debug as ConfDebug;
 use Psancho\Galeizon\Model\Conf\Mailer as ConfMailer;
 use Psancho\Galeizon\Model\Conf\Monolog as ConfMonolog;
+use Psancho\Galeizon\Model\Conf\Slim as ConfSlim;
 use Psancho\Galeizon\Pattern\Singleton;
 
 class Conf extends Singleton
 {
     public protected(set) ?ConfDatabase $database = null;
+    public protected(set) ConfDebug $debug;// @phpstan-ignore property.uninitialized
     public protected(set) ?ConfMailer $mailer = null;
-    public protected(set) ?ConfMonolog $monolog = null;
+    public protected(set) ConfMonolog $monolog;// @phpstan-ignore property.uninitialized
+    public protected(set) ?ConfSlim $slim = null;
     // TODO config dev spécifique, comprenant entre autres les assertions, self, etc..
 
     #[\Override]
@@ -42,7 +46,14 @@ class Conf extends Singleton
         if (property_exists($raw, 'database') && is_object($raw->database)) {
             $this->database = ConfDatabase::fromObject($raw->database);
         }
-        if (property_exists($raw, 'mailer') && is_object($raw->mailer)) {}
+        if (property_exists($raw, 'debug') && is_object($raw->debug)) {
+            $this->debug = ConfDebug::fromObject($raw->debug);
+        }
+        $this->debug = ConfDebug::fromObject(
+            property_exists($raw, 'debug') && is_object($raw->debug)
+            ? $raw->debug
+            : null
+        );
         $this->monolog = ConfMonolog::fromObject(
             property_exists($raw, 'monolog') && is_object($raw->monolog)
             ? $raw->monolog
