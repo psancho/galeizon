@@ -159,8 +159,8 @@ class RoutesMapper extends Singleton
                 continue;
             }
 
-            $endpointAttributes = $method->getAttributesByName(EndpointAttribute::class);
-            foreach ($endpointAttributes as $endpoint) {
+            $Endpoints = $method->getAttributesByName(Endpoint::class);
+            foreach ($Endpoints as $endpoint) {
                 /**
                  * @var string       $verb
                  * @var string       $path
@@ -221,7 +221,7 @@ class RoutesMapper extends Singleton
     {
         $endpointClass = (new BetterReflection)
         ->reflector()
-        ->reflectClass(EndpointAttribute::class)
+        ->reflectClass(Endpoint::class)
         ;
 
         $defaultArgs = [];

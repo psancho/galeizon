@@ -6,7 +6,7 @@ namespace Psancho\Galeizon\Adapter\SlimAdapter;
 use Attribute;
 
 #[Attribute(Attribute::IS_REPEATABLE | Attribute::TARGET_METHOD)]
-class EndpointAttribute
+class Endpoint
 {
     /** @param list<string> $middlewares */
     public function __construct(
