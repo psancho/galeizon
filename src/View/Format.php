@@ -91,12 +91,11 @@ class Format
 
     /**
      * @phpstan-param class-string $class
-     * @param         mixed        $value
      * @phpstan-param list<string> $skippedKeys
      *
      * @throws LogicException
      */
-    public static function getClassConstantName(string $class, string $prefix, $value, array $skippedKeys = []): ?string
+    public static function getClassConstantName(string $class, string $prefix, mixed $value, array $skippedKeys = []): ?string
     {
         /* @phpstan-var array<string, mixed> $classConstants */
         $classConstants = (new ReflectionClass($class))->getConstants();
@@ -105,12 +104,11 @@ class Format
 
     /**
      * @phpstan-param array<string, mixed> $constants
-     * @param         mixed                $value
      * @phpstan-param list<string>         $skippedKeys
      *
      * @throws LogicException
      */
-    private static function _getAnyConstantName(array $constants, string $prefix, $value, array $skippedKeys = []): ?string
+    private static function _getAnyConstantName(array $constants, string $prefix, mixed $value, array $skippedKeys = []): ?string
     {
         $const = array_filter($constants, function ($v, string $k) use ($prefix, $value, $skippedKeys) {
             return ($prefix === '' || strncmp($k, $prefix, strlen($prefix)) === 0)
