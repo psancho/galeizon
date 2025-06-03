@@ -16,7 +16,7 @@ use RuntimeException;
 use Slim\App;
 use Slim\Factory\AppFactory;
 
-abstract class SlimAdapter extends Singleton
+class SlimAdapter extends Singleton
 {
     /** @var App<ContainerInterface|null> */
     protected App $app;// @phpstan-ignore property.uninitialized
