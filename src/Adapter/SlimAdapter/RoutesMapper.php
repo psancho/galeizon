@@ -120,7 +120,9 @@ class RoutesMapper extends Singleton
         if (!$this->scriptFile instanceof SplFileObject) {
             $this->scriptFile = new SplFileObject(dirname(__DIR__, 6) . "/routes/routesMap.php", "w");
             $this->scriptFile->fwrite(<<<PHP
-            <?php declare(strict_types=1);
+            <?php
+
+            declare(strict_types=1);
 
             /**
              * auto-generated script
