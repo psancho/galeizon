@@ -9,6 +9,7 @@ use Psancho\Galeizon\Model\Conf\Database as ConfDatabase;
 use Psancho\Galeizon\Model\Conf\Debug as ConfDebug;
 use Psancho\Galeizon\Model\Conf\Mailer as ConfMailer;
 use Psancho\Galeizon\Model\Conf\Monolog as ConfMonolog;
+use Psancho\Galeizon\Model\Conf\SelfConf as ConfSelf;
 use Psancho\Galeizon\Model\Conf\Slim as ConfSlim;
 use Psancho\Galeizon\Pattern\Singleton;
 
@@ -19,6 +20,7 @@ class Conf extends Singleton
     public protected(set) ConfDebug $debug;// @phpstan-ignore property.uninitialized
     public protected(set) ?ConfMailer $mailer = null;
     public protected(set) ConfMonolog $monolog;// @phpstan-ignore property.uninitialized
+    public protected(set) ?ConfSelf $self = null;
     public protected(set) ?ConfSlim $slim = null;
     // TODO config dev spécifique, comprenant entre autres les assertions, self, etc..
 
@@ -66,7 +68,11 @@ class Conf extends Singleton
         if (property_exists($raw, 'mailer') && is_object($raw->mailer)) {
             $this->mailer = ConfMailer::fromObject($raw->mailer);
         }
-        if (property_exists($raw, 'self') && is_object($raw->self)) {}
-        if (property_exists($raw, 'slim') && is_object($raw->slim)) {}
+        if (property_exists($raw, 'self') && is_object($raw->self)) {
+            $this->self = ConfSelf::fromObject($raw->self);
+        }
+        if (property_exists($raw, 'slim') && is_object($raw->slim)) {
+            $this->slim = ConfSlim::fromObject($raw->slim);
+        }
     }
 }
