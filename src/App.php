@@ -16,14 +16,16 @@ require_once dirname(__DIR__, 3) . '/autoload.php';
 class App extends Singleton
 {
     public protected(set) Conf $conf;// @phpstan-ignore property.uninitialized
-    public protected(set) PDO $dbCnx;// @phpstan-ignore property.uninitialized
+    public protected(set) PDO $dataCnx;// @phpstan-ignore property.uninitialized
+    public protected(set) PDO $authCnx;// @phpstan-ignore property.uninitialized
 
     #[\Override]
     protected function build(): void
     {
         self::threatErrorAsException();
         $this->conf = Conf::getInstance();
-        $this->dbCnx = Connection::getInstance($this->conf->database);
+        $this->dataCnx = Connection::getInstance($this->conf->database);
+        $this->authCnx = Connection::getInstance($this->conf->auth?->database);
         // TODO contrôle des assertions à partir de la config
     }
 
