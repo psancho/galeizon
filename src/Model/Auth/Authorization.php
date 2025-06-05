@@ -30,9 +30,9 @@ class Authorization
     )
     {}
 
-    public function fromJson(string $json): self
+    public static function fromJson(string $json): static
     {
-        $authz = new self;
+        $authz = new static;// @phpstan-ignore new.static
         $args = Json::tryUnserialize($json);
         if (is_array($args)) {
             $args = (object) $args;
@@ -85,11 +85,11 @@ class Authorization
     }
 
     /** @throws InvalidArgumentException */
-    public static function decryptToken(string $token): ?self
+    public static function decryptToken(string $token): ?static
     {
         $decrypted = Token::decrypt($token);
 
-        return is_null($decrypted) ? null : new self($decrypted);
+        return is_null($decrypted) ? null : static::fromJson($decrypted);
     }
 
     /** @throws InvalidArgumentException */

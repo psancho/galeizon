@@ -16,19 +16,19 @@ class UserIdentity
     public string $email = '';
 
     /** @var class-string<self> */
-    protected static $decorated = __CLASS__;
+    private static string $decorator = __CLASS__;
 
-    public static function decorateWith(?string $userClass): void
+    /** @param class-string<self> $decorator */
+    public static function setDecorator(?string $decorator): void
     {
-        if (!is_null($userClass) && is_subclass_of($userClass, __CLASS__)) {
-            self::$decorated = $userClass;
+        if (!is_null($decorator) && is_subclass_of($decorator, __CLASS__)) {
+            self::$decorator = $decorator;
         }
     }
 
-    /** @return class-string<self> */
-    public static function decoratingClass(): string
+    public static function getDecorator(): string
     {
-        return self::$decorated;
+        return self::$decorator;
     }
 
     /** @return $this */
@@ -161,7 +161,7 @@ class UserIdentity
         where username = ? and password = sha(?)
         SQL;
         $sqlStmt = App::getInstance()->authCnx->prepare($sql) ?: throw new PDOException("DB_ERROR");
-        $sqlStmt->setFetchMode(PDO::FETCH_CLASS, self::$decorated);
+        $sqlStmt->setFetchMode(PDO::FETCH_CLASS, self::$decorator);
         $sqlStmt->execute([$username, $password]);
         /** @var ?static $user */
         $user = $sqlStmt->fetch() ?: null;
@@ -207,7 +207,7 @@ class UserIdentity
         where username = ?
         SQL;
         $sqlStmt = App::getInstance()->authCnx->prepare($sql) ?: throw new PDOException("DB_ERROR");
-        $sqlStmt->setFetchMode(PDO::FETCH_CLASS, self::$decorated);
+        $sqlStmt->setFetchMode(PDO::FETCH_CLASS, self::$decorator);
         $sqlStmt->execute([$username]);
         /** @var ?static $user */
         $user = $sqlStmt->fetch() ?: null;
@@ -224,7 +224,7 @@ class UserIdentity
         where username = (@contact := ?) or email = @contact
         SQL;
         $sqlStmt = App::getInstance()->authCnx->prepare($sql) ?: throw new PDOException("DB_ERROR");
-        $sqlStmt->setFetchMode(PDO::FETCH_CLASS, self::$decorated);
+        $sqlStmt->setFetchMode(PDO::FETCH_CLASS, self::$decorator);
         $sqlStmt->execute([$contact]);
         /** @var ?static $user */
         $user = $sqlStmt->fetch() ?: null;

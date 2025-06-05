@@ -58,7 +58,7 @@ abstract class SlimController
     }
 
     /** @throws UnexpectedValueException */
-    protected static function getBodyAsObject(ServerRequestInterface $request): mixed
+    protected static function getBodyAsObject(ServerRequestInterface $request): ?object
     {
         // la lecture d'un param peut perturber le bon fonctionnement
         try {

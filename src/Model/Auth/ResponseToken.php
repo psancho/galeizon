@@ -10,19 +10,4 @@ class ResponseToken implements ResponseAuthz
     public int $expires_in = 0;
     public string $refresh_token = "";
     public string $state = "";
-
-    #[\Override]
-    public function cleanup(): ResponseAuthz
-    {
-        if ($this->expires_in === 0) {
-            unset($this->expires_in);// @phpstan-ignore unset.possiblyHookedProperty
-        }
-        if ($this->refresh_token === "") {
-            unset($this->refresh_token);// @phpstan-ignore unset.possiblyHookedProperty
-        }
-        if ($this->state === "") {
-            unset($this->state);// @phpstan-ignore unset.possiblyHookedProperty
-        }
-        return $this;
-    }
 }
