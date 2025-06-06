@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+declare(strict_types=1);
+
+use Psancho\Galeizon\Adapter\SlimAdapter\RoutesMapper;
+use Psancho\Galeizon\App;
+
+try {
+    require dirname(__DIR__) . '/src/App.php';
+    App::getInstance();
+
+    echo "Creating File routes/routesMap.php \n";
+    RoutesMapper::getInstance()->mapControllerRoutes();
+    echo "routes/routesMap.php successfully filed.\n";
+
+} catch (Throwable $e) {
+    echo $e;
+    exit (1);
+}

@@ -1,0 +1,75 @@
+#!/usr/bin/env php
+<?php
+declare(strict_types=1);
+
+use Tuupola\Base62Proxy;
+
+$vendorDir = dirname(__DIR__);
+if (basename($vendorDir) !== 'vendor') {
+    $vendorDir = dirname(__DIR__, 3);
+}
+require $vendorDir . '/autoload.php';
+
+try {
+    $ctl = new KeyCliController;
+
+} catch (Throwable $e) {
+    echo "$e\n";
+}
+
+class KeyCliController
+{
+    public function __construct()
+    {
+        echo <<<TXT
+        \n\n
+        +-------------------------------------+
+        |                                     |
+        |         Générateur de clés          |
+        |                                     |
+        +-------------------------------------+
+        \n
+        TXT;
+
+        do {
+            echo "\n\nTaille de la clé en bit, 0 pour quitter: ";
+
+            $sizeBit = static::readLine();
+            $sizeBit = (int) $sizeBit;
+            if ($sizeBit < 1) {
+                break;
+            }
+
+            $sizeByte = self::bit2byte($sizeBit);
+
+            $key = random_bytes($sizeByte);
+            $keyHex = bin2hex($key);
+            $key62 = Base62Proxy::encode($key);
+            $key64 = base64_encode($key);
+
+            echo "génération de la clé sur $sizeByte octets\n";
+            echo "hexa: $keyHex\n";
+            echo "base62: $key62\n";
+            echo "base64: $key64\n";
+
+        } while (true);
+
+        echo "\nbye\n";
+    }
+
+    public static function readLine(): string
+    {
+        return trim(fgets(STDIN) ?: '');
+    }
+
+    /** @return int<1, max> */
+    public static function bit2byte(int $sizeBit): int
+    {
+        $sizeByte = intdiv($sizeBit, 8);
+        if ($sizeBit % 8 > 0) {
+            $sizeByte++;
+        }
+        assert($sizeByte > 0);
+        return $sizeByte;
+    }
+}

@@ -8,6 +8,8 @@
         }
     },
     "bin": [
+        "bin/galeizon-genkey",
+        "bin/galeizon-mapRoutes",
         "bin/galeizon-migrations"
     ],
     "require": {
