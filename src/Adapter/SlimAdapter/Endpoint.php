@@ -12,7 +12,6 @@ class Endpoint
     public function __construct(
         protected string $verb,
         protected string $path,
-        protected bool $secure = true,
         protected ?string $authz = null,
         protected array $middlewares = [],
     )

@@ -28,7 +28,7 @@ use Symfony\Component\Mime\Email;
 
 class AuthController extends SlimController
 {
-    #[Endpoint(verb: "GET", path: "/authc/dialog", secure: false)]
+    #[Endpoint(verb: "GET", path: "/authc/dialog")]
     public function getAuthcDialog(ServerRequest $request, ResponseInterface $response): ResponseInterface
     {
         return $this->getAuthcDialogCore($request, $response);
@@ -181,7 +181,7 @@ class AuthController extends SlimController
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-    #[Endpoint(verb: "POST", path: "/password/reset", secure: false)]
+    #[Endpoint(verb: "POST", path: "/password/reset")]
     public function postPwdReset(ServerRequest $request, ResponseInterface $response): ResponseInterface
     {
         return $this->postPwdResetCore($request, $response);
@@ -298,7 +298,7 @@ class AuthController extends SlimController
         ->withHeader('Pragma', 'no-cache');
 }
 
-    #[Endpoint(verb: "GET", path: "/authc/users/create", secure: false)]
+    #[Endpoint(verb: "GET", path: "/authc/users/create")]
     public function createUsers(ServerRequest $request, ResponseInterface $response): ResponseInterface
     {
         return $this->createUsersCore($request, $response);

@@ -121,7 +121,6 @@ class RoutesMapper extends Singleton
             $this->scriptFile = new SplFileObject(dirname(__DIR__, 6) . "/routes/routesMap.php", "w");
             $this->scriptFile->fwrite(<<<PHP
             <?php
-
             declare(strict_types=1);
 
             /**
@@ -166,11 +165,10 @@ class RoutesMapper extends Singleton
                 /**
                  * @var string       $verb
                  * @var string       $path
-                 * @var bool         $secure
-                 * @var ?string       $authz
+                 * @var ?string      $authz
                  * @var list<string> $middlewares
                  */
-                list('verb' => $verb, 'path' => $path, 'secure' => $secure, 'authz' => $authz, 'middlewares' => $middlewares)
+                list('verb' => $verb, 'path' => $path, 'authz' => $authz, 'middlewares' => $middlewares)
                     = array_merge($endpointDefaultArgs, $endpoint->getArguments());
                 $verbMethod = strtolower($verb);
                 if (!in_array($verbMethod, ['get', 'post', 'put', 'patch', 'delete'], true)) {
@@ -202,9 +200,6 @@ class RoutesMapper extends Singleton
                 }
                 if (!is_null($authz)) {
                     $instruction .= "->add(\$$authz)";
-                }
-                if ($secure) {
-                    $instruction .= "->add(\$securityHandler)";
                 }
 
                 $scriptFile->fwrite("$instruction;\n");
