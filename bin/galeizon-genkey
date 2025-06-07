@@ -29,6 +29,8 @@ class KeyCliController
         |                                     |
         +-------------------------------------+
         \n
+        client Id: 256b
+        client secret: 512b
         TXT;
 
         do {
