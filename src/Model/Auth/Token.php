@@ -23,7 +23,7 @@ class Token
      */
     public static function decrypt(string $token): ?string
     {
-        $keyRaw = static::key2raw(self::getCipherKey());
+        $keyRaw = self::getKeyRaw();
 
         try {
             $tokenRaw = Base62::decode($token);
@@ -44,19 +44,10 @@ class Token
         }
     }
 
-    /** @throws ConfException */
-    protected static function getCipherKey(): string
-    {
-        if (is_null(Conf::getInstance()->auth?->cipherKey)) {
-            throw new ConfException("auth.cipherKey not set", 1);
-        }
-        return Conf::getInstance()->auth->cipherKey;
-    }
-
     /** @throws InvalidArgumentException */
     public static function encrypt(string $data): string
     {
-        $keyRaw = static::key2raw(self::getCipherKey());
+        $keyRaw = self::getKeyRaw();
 
         $ivLen = (int) openssl_cipher_iv_length(self::$sslConfig['cipher']);
         $iv = openssl_random_pseudo_bytes($ivLen);
@@ -72,11 +63,15 @@ class Token
     /**
      * extrait la clé de la chaîne base62 et assure que sa longueur fait 256 bits (soit 32 octets)
      *
+     * @throws ConfException
      * @throws InvalidArgumentException
      */
-    protected static function key2raw(string $key): string
+    protected static function getKeyRaw(): string
     {
-        $keyRaw = Base62::decode($key);
+        if (is_null(Conf::getInstance()->auth?->cipherKey)) {
+            throw new ConfException("auth.cipherKey not set", 1);
+        }
+        $keyRaw = Base62::decode(Conf::getInstance()->auth->cipherKey);
         if (strlen($keyRaw) < 32) {
             throw new InvalidArgumentException("Cypher key too short.");
         }

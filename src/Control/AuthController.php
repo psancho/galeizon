@@ -340,7 +340,7 @@ class AuthController extends SlimController
             return $response->withStatus(StatusCode::HTTP_400_BAD_REQUEST);
         }
         try {
-            $authz->registration->register()->changePassword($authz->registration->password)->register();
+            $authz->registration?->register()->changePassword($authz->registration->password ?? '')->register();
         } catch (DuplicateUserException $e) {
             return $response
                 ->withStatus(StatusCode::HTTP_400_BAD_REQUEST)
@@ -358,8 +358,8 @@ class AuthController extends SlimController
                 $ihmBaseUrl = static::resolveUrl($request, Conf::getInstance()->auth->urlAdminUser ?? '');
                 $url = "$ihmBaseUrl{$userAdminRoute}";
                 $body = sprintf($emailTemplate,
-                    $authz->registration->firstname,
-                    $authz->registration->lastname,
+                    $authz->registration?->firstname,
+                    $authz->registration?->lastname,
                     $url,
                 );
                 $from = Conf::getInstance()->auth->noreply ?? 'noreply@galeizon.fr';
@@ -413,8 +413,8 @@ class AuthController extends SlimController
         }
 
         $token = AuthorizationRegistration::genTokenRegistration($registration);
-        $ihmBaseUrl = static::resolveUrl($request, "authc/users/create");
-        $url = "{$ihmBaseUrl}authc/users/create?token=$token";
+        $linkUrl = static::resolveUrl($request, "authc/users/create");
+        $url = "{$linkUrl}?token=$token";
         $body = sprintf($emailTemplate, $url);
         $from = Conf::getInstance()->auth->noreply ?? 'noreply@galeizon.fr';
 
@@ -424,7 +424,7 @@ class AuthController extends SlimController
         ->to($registration->email)
         ->html($body)
         ;
-        // MailerAdapter::getInstance()->send($email);
+        MailerAdapter::getInstance()->send($email);
 
         return $response
             ->withStatus(StatusCode::HTTP_204_NO_CONTENT);
@@ -440,11 +440,7 @@ class AuthController extends SlimController
         $wishedUri = new Uri($wishedUrl);
 
         if ($wishedUri->getAuthority() === '') {
-            if (File::isAbsolute($wishedUrl)) {
-                $wishedUrl = $apiUrl . $wishedUrl;
-            } else {
-                $wishedUrl = str_repeat('../', max(count(explode('/', $endpointPath)) - 1, 0)) . $wishedUrl;
-            }
+            $wishedUrl = $apiUrl . $wishedUrl;
         }
 
         $wishedUrl = new Uri($wishedUrl);

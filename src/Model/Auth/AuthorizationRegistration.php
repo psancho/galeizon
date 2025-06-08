@@ -7,8 +7,9 @@ use Psancho\Galeizon\View\Json;
 
 class AuthorizationRegistration extends Authorization
 {
+    public ?Registration $registration = null;
+
     public function __construct(
-        public Registration $registration,
         string $ownerId = '',
         OwnerType $ownerType = OwnerType::user,
         int $timestamp = 0,
@@ -38,10 +39,10 @@ class AuthorizationRegistration extends Authorization
     public static function genTokenRegistration(Registration $registration): string
     {
         $authRenew = new self(
-            registration: $registration,
             timestamp: time(),
             usage: TokenType::registrationToken,
         );
+        $authRenew->registration = $registration;
 
         return $authRenew->encryptToken();
     }
