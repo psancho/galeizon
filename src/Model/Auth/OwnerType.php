@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace Psancho\Galeizon\Model\Auth;
 
 use Error;
+use JsonSerializable;
 
-enum OwnerType
+enum OwnerType implements JsonSerializable
 {
     case user;
     case client;
@@ -25,5 +26,11 @@ enum OwnerType
     public function contains(OwnerType $owner): bool
     {
         return $this === self::any || $this === $owner;
+    }
+
+    #[\Override]
+    public function jsonSerialize(): string
+    {
+        return $this->name;
     }
 }
