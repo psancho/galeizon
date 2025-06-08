@@ -1,6 +1,15 @@
 # Galeizon
 
-My PHP framework.
+My PHP framework, built on top of [Slim framework](https://www.slimframework.com/).
+
+It integrates:
+
+- [Monolog](https://github.com/Seldaek/monolog),
+- [Symfony mailer](https://symfony.com/doc/current/mailer.html),
+- [Doctrine migrations](https://www.doctrine-project.org/projects/migrations.html),
+- built in oAuth2 solution
+
+[Galeizon](https://www.valleedugaleizon.fr/le-galeizon/) is one of the 30 wild rivers of France, more precisely in [les Cévennes](https://causses-et-cevennes.fr/cevennes).
 
 ## Quick start
 
