@@ -95,7 +95,7 @@ class Authorization
     /** @throws InvalidArgumentException */
     public function encryptToken(): string
     {
-        return Token::encrypt((string) json_encode($this));
+        return Token::encrypt(Json::serialize($this));
     }
 
     /**

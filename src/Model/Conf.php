@@ -12,6 +12,7 @@ use Psancho\Galeizon\Model\Conf\Monolog as ConfMonolog;
 use Psancho\Galeizon\Model\Conf\SelfConf as ConfSelf;
 use Psancho\Galeizon\Model\Conf\Slim as ConfSlim;
 use Psancho\Galeizon\Pattern\Singleton;
+use Psancho\Galeizon\View\Json;
 
 class Conf extends Singleton
 {
@@ -33,11 +34,11 @@ class Conf extends Singleton
         }
         try {
             $json = file_get_contents($confPath);
-        } catch (ErrorException $e) {
+        } catch (ErrorException) {
             throw new ConfException("CONF: unreadable json file", 1);
         }
         assert(is_string($json));
-        $raw = json_decode($json, flags: JSON_THROW_ON_ERROR);
+        $raw = Json::unserialize($json);
         if (!is_object($raw)) {
             throw new ConfException("CONF: bad format", 1);
         }

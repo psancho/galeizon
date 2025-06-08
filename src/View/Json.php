@@ -3,8 +3,7 @@ declare(strict_types = 1);
 
 namespace Psancho\Galeizon\View;
 
-use Psancho\Galeizon\Model\Conf;
-use UnexpectedValueException;
+use JsonException;
 
 class Json
 {
@@ -12,21 +11,10 @@ class Json
 
     private const string CONST_PREFIX = 'JSON_ERROR_';
 
+    /** @throws JsonException */
     public static function unserialize(string $json): mixed
     {
-        $data = json_decode($json, false);
-        $err = json_last_error();
-        $errJson = '';
-        if (JSON_ERROR_NONE !== $err) {
-            if (Conf::getInstance()->debug->logJsonOnError) {
-                $boundary = "\n--------------------------------------------------------------------------";
-                $errJson = "$boundary\n$json$boundary";
-            }
-            throw new UnexpectedValueException(
-                sprintf('Json error #%d (%s) when deserialisation', $err, self::errorMessage($err)) . $errJson, $err);
-        }
-
-        return $data;
+        return json_decode($json, false, flags: JSON_THROW_ON_ERROR);
     }
 
     /** désérialise la chaîne si elle correspond à du json, sinon retourne la chaine telle quelle */
@@ -41,16 +29,10 @@ class Json
         }
     }
 
-    /** @throws UnexpectedValueException */
+    /** @throws JsonException */
     public static function serialize(mixed $data): string
     {
-        $json = json_encode($data) ?: '';
-
-        $err = json_last_error();
-        if (JSON_ERROR_NONE !== $err) {
-            throw new UnexpectedValueException(
-                sprintf('Json error #%d (%s) when serialisation', $err, self::errorMessage($err)), $err);
-        }
+        $json = json_encode($data, JSON_THROW_ON_ERROR) ?: '';
 
         return $json;
     }
