@@ -48,7 +48,7 @@ class Template extends Singleton
 
         $tpl = $this->load($name, $set);
 
-        if (1 === $argCount) {
+        if (2 === $argCount) {
             // argument unique: pas de modif du tpl
             return $tpl;
 
