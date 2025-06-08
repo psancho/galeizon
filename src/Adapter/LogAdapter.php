@@ -65,7 +65,7 @@ class LogAdapter extends Singleton
 
         if (in_array(self::SYSTEM_FILES, $this->systems, true)) {
             $fileHandler = new RotatingFileHandler(
-                dirname(__DIR__, 2) . '/logs/log',
+                dirname(__DIR__, 5) . '/logs/log',
                 maxFiles: $conf->maxFiles,
                 level: $this->logLevel,
                 filePermission: 0777,
