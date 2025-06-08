@@ -1,0 +1,7 @@
+multipart parser (Slim is not enough)
+locale manager (automatic detection)
+CI/CD
+automatic migration (after deploy)
+Fire'n forget (continue job after http 200)
+DOM handling (or... how php 8.4 enhancements will help)
+SQL tools (I don't like ORM)
