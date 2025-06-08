@@ -14,6 +14,9 @@ class Auth
     public protected(set) ?ConfTokenLifetime $lifetime = null;
     public protected(set) string $noreply = '';
     public protected(set) bool $notifyOnRegistration = false;
+    public protected(set) string $urlDialogAuthc = '';
+    public protected(set) string $urlDialogPwd = '';
+    public protected(set) string $urlAdminUser = '';
 
     public static function fromObject(object $raw): self
     {
@@ -37,6 +40,15 @@ class Auth
         }
         if (property_exists($raw, 'notifyOnRegistration') && is_bool($raw->notifyOnRegistration)) {
             $typed->notifyOnRegistration = $raw->notifyOnRegistration;
+        }
+        if (property_exists($raw, 'urlDialogAuthc') && is_string($raw->urlDialogAuthc)) {
+            $typed->urlDialogAuthc = trim($raw->urlDialogAuthc);
+        }
+        if (property_exists($raw, 'urlDialogPwd') && is_string($raw->urlDialogPwd)) {
+            $typed->urlDialogPwd = trim($raw->urlDialogPwd);
+        }
+        if (property_exists($raw, 'urlAdminUser') && is_string($raw->urlAdminUser)) {
+            $typed->urlAdminUser = trim($raw->urlAdminUser);
         }
         return $typed;
     }

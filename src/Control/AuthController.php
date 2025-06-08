@@ -10,6 +10,7 @@ use Psancho\Galeizon\Adapter\SlimAdapter\Endpoint;
 use Psancho\Galeizon\Adapter\SlimAdapter\RequestAttr;
 use Psancho\Galeizon\Model\Auth\Authorization;
 use Psancho\Galeizon\Model\Auth\AuthorizationRegistration;
+use Psancho\Galeizon\Model\Auth\Client;
 use Psancho\Galeizon\Model\Auth\DuplicateUserException;
 use Psancho\Galeizon\Model\Auth\Error as AuthError;
 use Psancho\Galeizon\Model\Auth\PostPasswordResetPayload;
@@ -19,6 +20,7 @@ use Psancho\Galeizon\Model\Auth\ResponseToken;
 use Psancho\Galeizon\Model\Auth\TokenType;
 use Psancho\Galeizon\Model\Auth\UserIdentity;
 use Psancho\Galeizon\Model\Conf;
+use Psancho\Galeizon\Model\File;
 use Psancho\Galeizon\View\Json;
 use Psancho\Galeizon\View\StatusCode;
 use Psancho\Galeizon\View\Template;
@@ -46,6 +48,11 @@ class AuthController extends SlimController
         array $errorMessages = []
     ): ResponseInterface
     {
+        if ((Conf::getInstance()->auth->urlDialogAuthc ?? '') === "") {
+            return $response->withStatus(StatusCode::HTTP_501_NOT_IMPLEMENTED)
+                ->withHeader('Access-Control-Expose-Headers', 'X-Status-Reason')
+                ->withHeader('X-Status-Reason', 'Conf: no urlDialogAuthc.');
+        }
         if (is_null($badRequestTemplate)) {
             $badRequestTemplate = Template::getInstance()->format('dialogBadRequest', Template::CORE);
         }
@@ -78,13 +85,13 @@ class AuthController extends SlimController
             return $response->withStatus(StatusCode::HTTP_400_BAD_REQUEST);
         }
         // TODO
-        // if (!SecurityMetada::registeredRedirectUri($clientId, $redirectUri)) {
-        //     $body = sprintf($badRequestTemplate,
-        //         sprintf($errorMessages['invalid_redirect_uri_template'], $redirectUri, $clientId)
-        //     );
-        //     $response->getBody()->write($body);
-        //     return $response->withStatus(StatusCode::HTTP_400_BAD_REQUEST);
-        // }
+        if (!Client::isRegisteredRedirectUri($clientId, $redirectUri)) {
+            $body = sprintf($badRequestTemplate,
+                sprintf($errorMessages['invalid_redirect_uri_template'], $redirectUri, $clientId)
+            );
+            $response->getBody()->write($body);
+            return $response->withStatus(StatusCode::HTTP_400_BAD_REQUEST);
+        }
 
         /** @var array<string, string> $queryParams */
         $queryParams = $request->getParams() ?: [];
@@ -92,12 +99,12 @@ class AuthController extends SlimController
             'denied',
         ]);
 
-        $ihmBaseUrl = static::getIhmBaseUrl($request);
+        $formUrl = static::resolveUrl($request, Conf::getInstance()->auth->urlDialogAuthc ?? '');
         $query = self::paramToQuery($queryParams);
 
         return $response
             ->withStatus(StatusCode::HTTP_302_FOUND)
-            ->withHeader('Location', "$ihmBaseUrl/sign-in?$query")
+            ->withHeader('Location', "$formUrl?$query")
         ;
     }
 
@@ -202,7 +209,7 @@ class AuthController extends SlimController
         }
         $demand = PostPasswordResetPayload::fromObject($rawDemand);
 
-        if (!is_null($check = Authorization::isSameVendor($demand->client_id))) {
+        if (!is_null($check = Client::isSameVendor($demand->client_id))) {
             $json = Json::serialize(Json::cleanupProperties($check));
             $response->getBody()->write($json);
             return $response->withStatus($check->error->statusCode());
@@ -211,7 +218,7 @@ class AuthController extends SlimController
         $user = UserIdentity::retrieveEmailAddress($demand->contact);
         if (!is_null($user)) {
             $token = Authorization::genTokenPasswordReset($user->username);
-            $ihmBaseUrl = static::getIhmBaseUrl($request, true);
+            $ihmBaseUrl = static::resolveUrl($request, Conf::getInstance()->auth->urlDialogPwd ?? '');
             $url = "$ihmBaseUrl/renew?token=$token";
             $body = sprintf($emailTemplate, $url);
             $from = Conf::getInstance()->auth->noreply ?? 'noreply@galeizon.fr';
@@ -348,7 +355,7 @@ class AuthController extends SlimController
             /** @var array<string> $admins */
             $admins = $getAdminEmails();
             if (count($admins) > 0) {
-                $ihmBaseUrl = static::getIhmBaseUrl($request, true);
+                $ihmBaseUrl = static::resolveUrl($request, Conf::getInstance()->auth->urlAdminUser ?? '');
                 $url = "$ihmBaseUrl{$userAdminRoute}";
                 $body = sprintf($emailTemplate,
                     $authz->registration->firstname,
@@ -406,7 +413,7 @@ class AuthController extends SlimController
         }
 
         $token = AuthorizationRegistration::genTokenRegistration($registration);
-        $ihmBaseUrl = static::getIhmBaseUrl($request, true);
+        $ihmBaseUrl = static::resolveUrl($request, "authc/users/create");
         $url = "{$ihmBaseUrl}authc/users/create?token=$token";
         $body = sprintf($emailTemplate, $url);
         $from = Conf::getInstance()->auth->noreply ?? 'noreply@galeizon.fr';
@@ -417,41 +424,37 @@ class AuthController extends SlimController
         ->to($registration->email)
         ->html($body)
         ;
-        MailerAdapter::getInstance()->send($email);
+        // MailerAdapter::getInstance()->send($email);
 
         return $response
             ->withStatus(StatusCode::HTTP_204_NO_CONTENT);
     }
 
-    protected static function getIhmBaseUrl(ServerRequest $request, bool $absolute = false): string
+    protected static function resolveUrl(ServerRequest $request, string $wishedUrl): string
     {
-        $uri = $request->getUri();
-        $path = $uri->getPath();
-        $path = self::reducePath($path, Conf::getInstance()->slim->basepath ?? '');
+        $requestUri = $request->getUri();
+        $requestPath = $requestUri->getPath();
+        $endpointPath = self::reducePath($requestPath, Conf::getInstance()->slim->basepath ?? '');
+        $apiUrl = substr((string) $requestUri, 0, - strlen($endpointPath));
 
-        if (!isset($ihmBaseUrl)) {// @phpstan-ignore isset.variable
-            static $ihmBaseUrl = Conf::getInstance()->auth->ihmBaseUrl ?? 'ihm';
-        }
+        $wishedUri = new Uri($wishedUrl);
 
-        assert(is_string($ihmBaseUrl));
-        $ihmBaseUri = new Uri($ihmBaseUrl);
-        if ($ihmBaseUri->getAuthority() === '') {
-            if ($absolute) {
-                $apiUrl = new Uri(substr((string) $uri, 0, - strlen($path)) ?: '');
-                $ihmBaseUrl = $apiUrl . $ihmBaseUrl;
+        if ($wishedUri->getAuthority() === '') {
+            if (File::isAbsolute($wishedUrl)) {
+                $wishedUrl = $apiUrl . $wishedUrl;
             } else {
-                $ihmBaseUrl = str_repeat('../', max(count(explode('/', $path)) - 1, 0)) . $ihmBaseUrl;
+                $wishedUrl = str_repeat('../', max(count(explode('/', $endpointPath)) - 1, 0)) . $wishedUrl;
             }
         }
 
-        $ihmBaseUrl = new Uri($ihmBaseUrl);
+        $wishedUrl = new Uri($wishedUrl);
         if (array_key_exists('HTTP_X_FORWARDED_HOST', $_SERVER)
-            && $ihmBaseUrl->getScheme() !== ''
+            && $wishedUrl->getScheme() !== ''
         ) {
-            $ihmBaseUrl = $ihmBaseUrl->withScheme('https');
+            $wishedUrl = $wishedUrl->withScheme('https');
         }
 
-        return (string) $ihmBaseUrl;
+        return (string) $wishedUrl;
     }
 
     protected static function reducePath(string $path, string $reference): string

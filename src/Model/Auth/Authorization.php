@@ -250,7 +250,7 @@ class Authorization
             return new AuthError(ErrorType::invalid_request);
         }
 
-        $check = self::isSameVendor($demand->client_id);
+        $check = Client::isSameVendor($demand->client_id);
         if (!is_null($check)) {
             return $check;
         }
@@ -281,27 +281,6 @@ class Authorization
         $response->refresh_token = $authRefresh->encryptToken();
 
         return $response;
-    }
-
-    public static function isSameVendor(string $clientId): ?AuthError
-    {
-
-        $sql = <<<SQL
-        select `uid`, same_vendor from `client` where `uid` = ?
-        SQL;
-        $stmt = App::getInstance()->authCnx->prepare($sql) ?: throw new PDOException("DB_ERROR");
-        $stmt->execute([$clientId]);
-        /** @var false|array{uid: string, same_vendor: int} */
-        $client = $stmt->fetch(PDO::FETCH_ASSOC);
-        $stmt->closeCursor();
-
-        if ($client === false) {
-            return new AuthError(ErrorType::invalid_client);
-        } else if ($client['same_vendor'] === 0) {
-            return new AuthError(ErrorType::unauthorized_client);
-        } else {
-            return null;
-        }
     }
 
     protected static function genTokenUsingRefresh(PostTokenPayload $demand): ResponseAuthz|AuthError

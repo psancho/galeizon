@@ -49,9 +49,6 @@ class Registration extends UserIdentity
         if (property_exists($object, 'username') && is_string($object->username)) {
             $typed->username = $object->username;
         }
-        if (property_exists($object, 'username') && is_string($object->username)) {
-            $typed->username = $object->username;
-        }
         if (property_exists($object, 'password') && is_string($object->password)) {
             $typed->password = $object->password;
         }
