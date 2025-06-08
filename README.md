@@ -46,19 +46,19 @@ logging is based on [`monolog/monolog`](https://github.com/Seldaek/monolog), wit
 
 Logging methods (and levels) are, from lower to higher:
 
-* `debug`: detailled info for dev or debug purpose
-* `info`: interesting event
-* `notice`: significant event
-* `warning`: unexpected event other than error
-* `error`: runtime error (non blocking)
-* `critical`: blocking error
-* `alert`: part of app is unavailable
-* `emergency`: system unusuable
+- `debug`: detailled info for dev or debug purpose
+- `info`: interesting event
+- `notice`: significant event
+- `warning`: unexpected event other than error
+- `error`: runtime error (non blocking)
+- `critical`: blocking error
+- `alert`: part of app is unavailable
+- `emergency`: system unusuable
 
 Galeizon comes with 2 preconfigured handlers:
 
-* rotatings files (in `logs` subdir)
-* stdout (used by docker)
+- rotatings files (in `logs` subdir)
+- stdout (used by docker)
 
 Preconfigured handlers have to be set in config file
 
