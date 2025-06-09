@@ -78,6 +78,33 @@ Example of `config.jdon` snippet:
 },
 ```
 
+## Fire and forget (AKA FnF)
+
+FnF purpose is to close the client connection immediately, while the script continues running, in order to avoid timeout errors.
+
+```php
+// define my job callback:
+class MyCtl {
+    public static function myJobCb($myParam) { /* ... */ }
+}
+
+// add my job:
+FireAndForget::getInstance()->addJob(
+    Closure::fromCallable([MyCtl::class, 'myJobCb']),
+    ['my param']
+);
+
+// here comes the end of webscript
+// in a Controller, this is done by returning a Response
+// in a View, this is done directly by writing status, headers, etc.
+// status code `HTTP 202 accepted` should be fired.
+
+// append following snippet at the end of the script file:
+if (FireAndForget::getInstance()->hasJobs()) {
+    FireAndForget::getInstance()->run();
+}
+```
+
 ## Migrations
 
 Galeizon is based on doctrine/migrations lib.
