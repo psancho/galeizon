@@ -171,7 +171,7 @@ class MigrationsAdapter extends Singleton
     public function run(...$args): int
     {
         $input = null;
-        if ($args) {// @phpstan-ignore if.condNotBoolean
+        if (count($args) > 0) {
             assert(array_key_exists(0, $args));
             $command = $args[0];
             if (!$this->cli->has($command) && !$this->cli->isAutoExitEnabled()) {
