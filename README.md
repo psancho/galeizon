@@ -142,7 +142,7 @@ __NOTE__: autoExit MUST be OFF before cli is invoked programmatically.
 
 ```php
 $exitCode = MigrationsAdapter::getInstance()->resetAutoExit()->run('myCommand');
-if ($exitCode) {
+if ($exitCode !== 0) {
     // error handling
 }
 ```
