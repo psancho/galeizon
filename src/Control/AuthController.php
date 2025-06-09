@@ -20,7 +20,6 @@ use Psancho\Galeizon\Model\Auth\ResponseToken;
 use Psancho\Galeizon\Model\Auth\TokenType;
 use Psancho\Galeizon\Model\Auth\UserIdentity;
 use Psancho\Galeizon\Model\Conf;
-use Psancho\Galeizon\Model\File;
 use Psancho\Galeizon\View\Json;
 use Psancho\Galeizon\View\StatusCode;
 use Psancho\Galeizon\View\Template;
@@ -251,22 +250,21 @@ class AuthController extends SlimController
             $emailTemplate = Template::getInstance()->format('emailLinkNew', Template::CORE);
         }
 
-        /** @var ?string $password */
-        $password = null;
+        $password = '';
         $parsedBody = $request->getParsedBody();
         if (is_object($parsedBody)) {
             $parsedBody = (array) $parsedBody;
         }
         if (is_array($parsedBody)) {
-            extract($parsedBody);
+            extract($parsedBody, EXTR_IF_EXISTS);
         }
 
-        if (empty($password)) { // @phpstan-ignore empty.notAllowed
+        if ($password === "") {// @phpstan-ignore identical.alwaysTrue
             return $response->withStatus(StatusCode::HTTP_400_BAD_REQUEST);
         }
 
         /** @var Authorization $authz */
-        $authz = $request->getAttribute(RequestAttr::authorization->name);
+        $authz = $request->getAttribute(RequestAttr::authorization->name);// @phpstan-ignore deadCode.unreachable
         if (!$authz->isUsedFor(TokenType::passwordResetToken)) {
             LogAdapter::notice('SECURITY attempt to change password with inappropriate token');
             return $response->withStatus(StatusCode::HTTP_400_BAD_REQUEST);
@@ -321,8 +319,9 @@ class AuthController extends SlimController
             $emailTemplate = Template::getInstance()->format('emailNoticeNewUser', Template::CORE);
         }
 
-        $token = self::getParamAsString($request, 'token', true);
-        if (empty($token)) { // @phpstan-ignore empty.notAllowed
+        $token = self::getParamAsString($request, 'token', true, '');
+        assert(is_string($token));
+        if ($token === '') {
             return $response->withStatus(StatusCode::HTTP_400_BAD_REQUEST);
         }
         $authz = AuthorizationRegistration::decryptToken($token);
