@@ -4,3 +4,4 @@ CI/CD
 automatic migration (after deploy)
 DOM handling (or... how php 8.4 enhancements will help)
 SQL tools (I don't like ORM)
+Sensible conf in env var
