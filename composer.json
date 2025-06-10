@@ -10,7 +10,8 @@
     "bin": [
         "bin/galeizon-genkey",
         "bin/galeizon-mapRoutes",
-        "bin/galeizon-migrations"
+        "bin/galeizon-migrations",
+        "bin/galeizon-remote-migrate"
     ],
     "require": {
         "php": "^8.4",

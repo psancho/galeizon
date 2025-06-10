@@ -1,0 +1,126 @@
+#!/bin/bash
+
+##
+# Test variables
+##
+varOk=1
+if [ -z ${CI_ENVIRONMENT_URL} ]; then
+    echo CI_ENVIRONMENT_URL not set
+    varOk=0
+fi
+if [ -z ${CLIENT_ID} ]; then
+    echo CLIENT_ID not set
+    varOk=0
+fi
+if [ -z ${CLIENT_SECRET} ]; then
+    echo CLIENT_SECRET not set
+    varOk=0
+fi
+if [ $varOk == 0 ]; then
+    exit 1
+fi
+
+##
+# Parse config.json
+#####
+configFile=config.json
+if [ ! -f $configFile ]; then
+    echo $configFile not found: aborting
+    exit 1
+fi
+
+##
+# Dernière version attendue
+#####
+directory=$(jq -r .database.migrations.directory $configFile)
+namespace=$(jq -r .database.migrations.namespace $configFile)
+
+migrationsPath=$(realpath $(pwd)/$directory)
+
+if [ ! -d $migrationsPath ]; then
+    echo Migrations folder does not exist: aborting
+    exit 0
+fi
+
+filename=$(ls $migrationsPath -r | head -1)
+if [ -n "$filename" ]; then
+    expectedLatest=$namespace\\${filename%.*}
+else
+    echo Migrations folder is empty: aborting
+    exit 0
+fi
+echo expectedLatest: $expectedLatest
+
+##
+# POST token
+#####
+echo authenticate for migration
+
+body="{\
+    \"grant_type\":\"client_credentials\",\
+    \"client_id\":\"$CLIENT_ID\",\
+    \"client_secret\":\"$CLIENT_SECRET\",\
+    \"scope\":\"admin_schema\"\
+}"
+
+responseToken=$(curl \
+    -s \
+    -H "Content-type: application/json" \
+    -H "Accept: application/json" \
+    -H "X-Security: client-id=\"$CLIENT_ID\",timestamp=\"$(date +%s)\",nonce=\"$RANDOM$RANDOM\"" \
+    --data-raw "{\
+        \"grant_type\":\"client_credentials\",\
+        \"client_id\":\"$CLIENT_ID\",\
+        \"client_secret\":\"$CLIENT_SECRET\",\
+        \"scope\":\"admin_schema\"\
+    }" \
+    -X POST ${CI_ENVIRONMENT_URL%/}/token\
+)
+accessToken=$(echo $responseToken | jq -r .access_token)
+tokenType=$(echo $responseToken | jq -r .token_type)
+
+if [ -z ${accessToken} ]; then
+    echo No accessToken in API response
+    exit 1
+fi
+
+##
+# PUT migrations
+#####
+echo start migrations update
+
+success=1
+for i in $(seq 1 5);
+do
+    responseCode=$(\
+        curl\
+        -s\
+        -w '%{http_code}'\
+        -H "content-type: text/plain"\
+        -H "X-Security: client-id=\"$CLIENT_ID\",timestamp=\"$(date +%s)\",nonce=\"$RANDOM$RANDOM\"" \
+        -H "Authorization: $tokenType $accessToken"\
+        -d "$expectedLatest"\
+        -X PUT ${CI_ENVIRONMENT_URL%/}/migrations\
+    )
+    case $responseCode in
+        503)
+            echo remote version is not the last one, retrying
+            ;;
+        204)
+            echo remote environment is already up to date
+            success=0
+            break
+            ;;
+        202)
+            echo remote migrations started
+            success=0
+            break
+            ;;
+        *)
+            echo "remote env responded HTTP $responseCode, aborting"
+            break
+            ;;
+    esac
+    sleep 2s;
+done
+exit $success
