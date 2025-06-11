@@ -14,7 +14,15 @@ class Json
     /** @throws JsonException */
     public static function unserialize(string $json): mixed
     {
-        return json_decode($json, false, flags: JSON_THROW_ON_ERROR);
+        return json_decode(self::stripComments($json), false, flags: JSON_THROW_ON_ERROR);
+    }
+
+    /** @see https://stackoverflow.com/questions/8148797/a-json-parser-for-php-that-supports-comments#answer-43439966 */
+    private static function stripComments(string $json): string
+    {
+        $uncommented = preg_replace('~(" (?:\\\\. | [^"])*+ ") | \# [^\v]*+ | // [^\v]*+ | /\* .*? \*/~xs', '$1', $json);
+        assert(is_string($uncommented));
+        return $uncommented;
     }
 
     /** désérialise la chaîne si elle correspond à du json, sinon retourne la chaine telle quelle */

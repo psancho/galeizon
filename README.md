@@ -11,6 +11,8 @@ It integrates:
 
 [Galeizon](https://www.valleedugaleizon.fr/le-galeizon/) is one of the 30 wild rivers of France, more precisely in [les Cévennes](https://causses-et-cevennes.fr/cevennes).
 
+NOTE: config filename may be `config.jsonc` or `config.json`.
+
 ## Quick start
 
 Minimal `composer.json` file for the main project:
@@ -64,7 +66,7 @@ Preconfigured handlers have to be set in config file
 
 Further handlers (such as AWS cloudwatch) may be pushed to logger, using `LogAdapter::pushHandler()`
 
-Example of `config.jdon` snippet:
+Example of `config.json` snippet:
 
 ```json
 "monolog": {
