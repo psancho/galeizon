@@ -196,7 +196,7 @@ class MigrationsAdapter extends Singleton
         assert(array_key_exists('migrations_paths', self::$config));
         $list = array_diff(scandir(self::$config['migrations_paths'][$ns]) ?: [], ['..', '.']);
         sort($list);
-        return $ns . '\\' . basename(array_pop($list) ?? '', '.php');
+        return count($list) === 0 ? '' : $ns . '\\' . basename(array_pop($list) ?? '', '.php');
     }
 
     public function isUpToDate(): bool
