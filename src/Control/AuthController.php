@@ -8,6 +8,7 @@ use Psancho\Galeizon\Adapter\LogAdapter;
 use Psancho\Galeizon\Adapter\MailerAdapter;
 use Psancho\Galeizon\Adapter\SlimAdapter\Endpoint;
 use Psancho\Galeizon\Adapter\SlimAdapter\RequestAttr;
+use Psancho\Galeizon\Adapter\UnimplementedException;
 use Psancho\Galeizon\Model\Auth\Authorization;
 use Psancho\Galeizon\Model\Auth\AuthorizationRegistration;
 use Psancho\Galeizon\Model\Auth\Client;
@@ -340,11 +341,17 @@ class AuthController extends SlimController
         }
         try {
             $authz->registration?->register()->changePassword($authz->registration->password ?? '')->register();
-        } catch (DuplicateUserException $e) {
+        } catch (DuplicateUserException) {
             return $response
                 ->withStatus(StatusCode::HTTP_400_BAD_REQUEST)
                 ->withHeader('Access-Control-Expose-Headers', 'X-Status-Reason')
                 ->withHeader('X-Status-Reason', 'User already exists with different email ou username')
+            ;
+        } catch (UnimplementedException $e) {
+            return $response
+                ->withStatus(StatusCode::HTTP_501_NOT_IMPLEMENTED)
+                ->withHeader('Access-Control-Expose-Headers', 'X-Status-Reason')
+                ->withHeader('X-Status-Reason', $e->getMessage())
             ;
         }
 

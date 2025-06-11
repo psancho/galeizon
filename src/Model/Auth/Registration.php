@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Psancho\Galeizon\Model\Auth;
 
-use LogicException;
 use PDO;
 use PDOException;
+use Psancho\Galeizon\Adapter\UnimplementedException;
 use Psancho\Galeizon\App;
 
 class Registration extends UserIdentity
@@ -37,7 +37,7 @@ class Registration extends UserIdentity
             $user = (UserIdentity::getDecorator())::fromObject($this);
             $user->register();
         } else {
-            throw new LogicException("REGISTER_NOT_IMPLEMENTED", 1);
+            throw new UnimplementedException("REGISTER_NOT_IMPLEMENTED", 1);
         }
         return $this;
     }
