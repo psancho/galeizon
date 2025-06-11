@@ -28,7 +28,10 @@ class Conf extends Singleton
     #[\Override]
     protected function build(): void
     {
-        $confPath = dirname(__DIR__, 5) . '/config.json';
+        $confPath = dirname(__DIR__, 5) . '/config.jsonc';
+        if (!file_exists($confPath)) {
+            $confPath = dirname(__DIR__, 5) . '/config.json';
+        }
         if (!file_exists($confPath)) {
             throw new ConfException("CONF: json file not found", 1);
         }
@@ -45,35 +48,33 @@ class Conf extends Singleton
         $this->readConf($raw);
     }
 
+    private const ROOT_PASS = 'galeizon';
+
     private function readConf(object $raw): void
     {
         if (property_exists($raw, 'auth') && is_object($raw->auth)) {
-            $this->auth = ConfAuth::fromObject($raw->auth);
+            $this->auth = ConfAuth::fromObject($raw->auth, self::ROOT_PASS);
         }
         if (property_exists($raw, 'database') && is_object($raw->database)) {
-            $this->database = ConfDatabase::fromObject($raw->database);
+            $this->database = ConfDatabase::fromObject($raw->database, self::ROOT_PASS);
         }
-        if (property_exists($raw, 'debug') && is_object($raw->debug)) {
-            $this->debug = ConfDebug::fromObject($raw->debug);
-        }
-        $this->debug = ConfDebug::fromObject(
-            property_exists($raw, 'debug') && is_object($raw->debug)
-            ? $raw->debug
-            : null
-        );
-        $this->monolog = ConfMonolog::fromObject(
-            property_exists($raw, 'monolog') && is_object($raw->monolog)
-            ? $raw->monolog
-            : null
-        );
+        $this->debug = property_exists($raw, 'debug') && is_object($raw->debug)
+            ? ConfDebug::fromObject($raw->debug, self::ROOT_PASS)
+            : new ConfDebug
+        ;
         if (property_exists($raw, 'mailer') && is_object($raw->mailer)) {
-            $this->mailer = ConfMailer::fromObject($raw->mailer);
+            $this->mailer = ConfMailer::fromObject($raw->mailer, self::ROOT_PASS);
         }
+        $this->monolog =
+            property_exists($raw, 'monolog') && is_object($raw->monolog)
+            ? ConfMonolog::fromObject($raw->monolog, self::ROOT_PASS)
+            : new ConfMonolog
+        ;
         if (property_exists($raw, 'self') && is_object($raw->self)) {
-            $this->self = ConfSelf::fromObject($raw->self);
+            $this->self = ConfSelf::fromObject($raw->self, self::ROOT_PASS);
         }
         if (property_exists($raw, 'slim') && is_object($raw->slim)) {
-            $this->slim = ConfSlim::fromObject($raw->slim);
+            $this->slim = ConfSlim::fromObject($raw->slim, self::ROOT_PASS);
         }
     }
 }

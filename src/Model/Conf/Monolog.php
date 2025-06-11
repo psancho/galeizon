@@ -3,19 +3,18 @@ declare(strict_types=1);
 
 namespace Psancho\Galeizon\Model\Conf;
 
-class Monolog
+use Psancho\Galeizon\Model\Conf\Entry as ConfEntry;
+
+class Monolog extends ConfEntry
 {
     public protected(set) string $level = 'debug';
     public protected(set) string $systems = 'stdout';
     public protected(set) int $maxFiles = 1;
 
-    public static function fromObject(?object $raw): self
+    #[\Override]
+    public static function fromObject(object $raw, string $path): self
     {
         $typed = new self;
-        if (is_null($raw)) {
-            return new self;
-        }
-
         if (property_exists($raw, 'level') && is_string($raw->level)) {
             $typed->level = trim($raw->level);
         }

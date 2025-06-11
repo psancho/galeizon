@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace Psancho\Galeizon\Model\Conf;
 
-class Mailer
+use Psancho\Galeizon\Model\Conf\Entry as ConfEntry;
+
+class Mailer extends ConfEntry
 {
     public protected(set) string $dsn = '';
 
-    public static function fromObject(object $raw): self
+    #[\Override]
+    public static function fromObject(object $raw, string $path): self
     {
         $typed = new self;
         if (property_exists($raw, 'dsn') && is_string($raw->dsn)) {

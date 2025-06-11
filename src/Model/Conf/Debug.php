@@ -3,18 +3,17 @@ declare(strict_types=1);
 
 namespace Psancho\Galeizon\Model\Conf;
 
-class Debug
+use Psancho\Galeizon\Model\Conf\Entry as ConfEntry;
+
+class Debug extends ConfEntry
 {
     public protected(set) bool $logJsonOnError = false;
     public protected(set) bool $traceRequests = false;
 
-    public static function fromObject(?object $raw): self
+    #[\Override]
+    public static function fromObject(object $raw, string $path): self
     {
         $typed = new self;
-        if (is_null($raw)) {
-            return new self;
-        }
-
         if (property_exists($raw, 'logJsonOnError') && is_bool($raw->logJsonOnError)) {
             $typed->logJsonOnError = $raw->logJsonOnError;
         }

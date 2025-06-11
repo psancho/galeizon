@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Psancho\Galeizon\Model\Conf;
 
-class Migrations
+use Psancho\Galeizon\Model\Conf\Entry as ConfEntry;
+
+class Migrations extends ConfEntry
 {
     public protected(set) ?Credentials $credentials = null;
     public protected(set) string $directory = "./migrations";
@@ -13,11 +15,13 @@ class Migrations
     /** @var string[] */
     public protected(set) array $reportTo = [];
 
-    public static function fromObject(object $raw): self
+    #[\Override]
+    public static function fromObject(object $raw, string $path): self
     {
+        $subPath = "{$path}_migrations";
         $typed = new self;
         if (property_exists($raw, 'credentials') && is_object($raw->credentials)) {
-            $typed->credentials = Credentials::fromObject($raw->credentials);
+            $typed->credentials = Credentials::fromObject($raw->credentials, $subPath);
         }
         if (property_exists($raw, 'directory') && is_string($raw->directory)) {
             $typed->directory = trim($raw->directory);

@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Psancho\Galeizon\Model\Conf;
 
-class Slim
+use Psancho\Galeizon\Model\Conf\Entry as ConfEntry;
+
+class Slim extends ConfEntry
 {
     public protected(set) string $basepath = '';
     /** @var list<string> */
@@ -12,7 +14,8 @@ class Slim
     /** @var list<string> */
     public protected(set) array $whiteList = [];
 
-    public static function fromObject(object $raw): self
+    #[\Override]
+    public static function fromObject(object $raw, string $path): self
     {
         $typed = new self;
         if (property_exists($raw, 'basepath') && is_string($raw->basepath)) {
