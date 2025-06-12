@@ -1,5 +1,4 @@
 multipart parser (Slim is not enough)
-locale manager (automatic detection)
 CI/CD
 automatic migration (after deploy)
 DOM handling (or... how php 8.4 enhancements will help)
