@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace Psancho\Galeizon\Model\Auth;
 
+use JsonSerializable;
 use Psancho\Galeizon\View\StatusCode;
 
-enum ErrorType
+enum ErrorType implements JsonSerializable
 {
     /** param manquant ou inattendu */
     case invalid_request;
@@ -33,5 +34,11 @@ enum ErrorType
             self::inactive_user => StatusCode::HTTP_403_FORBIDDEN,
             default => StatusCode::HTTP_400_BAD_REQUEST,
         };
+    }
+
+    #[\Override]
+    public function jsonSerialize(): string
+    {
+        return $this->name;
     }
 }

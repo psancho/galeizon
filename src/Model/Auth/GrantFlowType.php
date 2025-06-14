@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace Psancho\Galeizon\Model\Auth;
 
 use Error;
+use JsonSerializable;
 
-enum GrantFlowType
+enum GrantFlowType implements JsonSerializable
 {
     case implicit;
     case authorization_code;
@@ -22,5 +23,11 @@ enum GrantFlowType
         } catch (Error) {// @phpstan-ignore catch.neverThrown
             return null;
         }
+    }
+
+    #[\Override]
+    public function jsonSerialize(): string
+    {
+        return $this->name;
     }
 }
