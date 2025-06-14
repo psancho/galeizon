@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Psancho\Galeizon\Model;
 
 use ErrorException;
+use Psancho\Galeizon\Model\Conf\App as ConfApp;
 use Psancho\Galeizon\Model\Conf\Auth as ConfAuth;
 use Psancho\Galeizon\Model\Conf\Database as ConfDatabase;
 use Psancho\Galeizon\Model\Conf\Debug as ConfDebug;
@@ -16,6 +17,7 @@ use Psancho\Galeizon\View\Json;
 
 class Conf extends Singleton
 {
+    public protected(set) ?ConfApp $app = null;
     public protected(set) ?ConfAuth $auth = null;
     public protected(set) ?ConfDatabase $database = null;
     public protected(set) ConfDebug $debug;// @phpstan-ignore property.uninitialized
@@ -52,6 +54,9 @@ class Conf extends Singleton
 
     private function readConf(object $raw): void
     {
+        if (property_exists($raw, 'app') && is_object($raw->app)) {
+            $this->app = ConfApp::fromObject($raw->app, self::ROOT_PASS);
+        }
         if (property_exists($raw, 'auth') && is_object($raw->auth)) {
             $this->auth = ConfAuth::fromObject($raw->auth, self::ROOT_PASS);
         }

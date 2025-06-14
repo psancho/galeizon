@@ -18,7 +18,6 @@ class UserIdentity
     /** @var class-string<self> */
     private static string $decorator = __CLASS__;
 
-    /** @param class-string<self> $decorator */
     public static function setDecorator(?string $decorator): void
     {
         if (!is_null($decorator) && is_subclass_of($decorator, __CLASS__)) {

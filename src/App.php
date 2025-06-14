@@ -5,11 +5,10 @@ namespace Psancho\Galeizon;
 
 use ErrorException;
 use PDO;
-use Psancho\Galeizon\Adapter\MailerAdapter;
+use Psancho\Galeizon\Model\Auth\UserIdentity;
 use Psancho\Galeizon\Model\Conf;
 use Psancho\Galeizon\Model\Database\Connection;
 use Psancho\Galeizon\Pattern\Singleton;
-use Symfony\Component\Mime\Email;
 
 require_once dirname(__DIR__, 3) . '/autoload.php';
 
@@ -26,7 +25,8 @@ class App extends Singleton
         $this->conf = Conf::getInstance();
         $this->dataCnx = Connection::getInstance($this->conf->database);
         $this->authCnx = Connection::getInstance($this->conf->auth?->database);
-        // TODO contrôle des assertions à partir de la config
+
+        UserIdentity::setDecorator($this->conf->app?->userDecorator);
     }
 
     protected static function threatErrorAsException(): void
