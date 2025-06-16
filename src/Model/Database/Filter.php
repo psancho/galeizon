@@ -34,10 +34,6 @@ namespace Psancho\Galeizon\Model\Database;
  */
 abstract class Filter
 {
-    public ?Paging $paging = null;
-    /** @var array<string> */
-    public array $sort = [];
-
     /**
      * Cette variable DOIT être redéfinie si parseSort() est utilisé
      *
@@ -47,11 +43,15 @@ abstract class Filter
     /**
      * Cette variable PEUT être redéfinie si les critères de la $columnList ont besoins d'être réécrits
      *
-     * @var array<string>
+     * @var array<string, string>
      */
     protected static array $replaceSorts = [];
 
-    public function __construct()
+    public function __construct(
+        public ?Paging $paging = null,
+        /** @var array<string> */
+        public array $sort = [],
+    )
     {
         $this->setClauseWhere();
     }
