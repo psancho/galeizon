@@ -38,9 +38,9 @@ class Json
     }
 
     /** @throws JsonException */
-    public static function serialize(mixed $data): string
+    public static function serialize(mixed $data, int $options = 0): string
     {
-        $json = json_encode($data, JSON_THROW_ON_ERROR) ?: '';
+        $json = json_encode($data, $options | JSON_THROW_ON_ERROR) ?: '';
 
         return $json;
     }
