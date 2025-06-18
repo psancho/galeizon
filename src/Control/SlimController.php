@@ -7,6 +7,7 @@ use Exception;
 use Psancho\Galeizon\Adapter\LogAdapter;
 use Psancho\Galeizon\Adapter\SlimAdapter\Container;
 use Psancho\Galeizon\Model\Conf;
+use Psancho\Galeizon\Model\Database\Paging;
 use Psancho\Galeizon\View\Json;
 use Psancho\Galeizon\View\StatusCode;
 use Psr\Http\Message\ResponseInterface;
@@ -80,44 +81,39 @@ abstract class SlimController
     }
 
     /** @throws UnexpectedValueException */
-    protected static function getParamAsString(ServerRequest $request, string $name, bool $required = false, ?string $default = null): ?string
+    protected static function getParamAsString(ServerRequest $request, string $name, bool $required = false): ?string
     {
-        $value = self::_getParam($request, $name, $required);
-        if (is_null($value)) {
-            return $default;
-        } else {
-            return $value;
-        }
+        return self::_getParam($request, $name, $required);
     }
 
     /** @throws UnexpectedValueException */
-    protected static function getParamAsInt(ServerRequest $request, string $name, bool $required = false, ?int $default = null): ?int
+    protected static function getParamAsInt(ServerRequest $request, string $name, bool $required = false): ?int
     {
         $value = self::_getParam($request, $name, $required);
-        if (is_null($value) || trim($value) === '') {
-            return $default;
+        if (is_null($value) || $value === '') {
+            return null;
         } else {
             return (int) $value;
         }
     }
 
     /** @throws UnexpectedValueException */
-    protected static function getParamAsFloat(ServerRequest $request, string $name, bool $required = false, ?int $default = null): ?float
+    protected static function getParamAsFloat(ServerRequest $request, string $name, bool $required = false): ?float
     {
         $value = self::_getParam($request, $name, $required);
-        if (is_null($value) || trim($value) === '') {
-            return $default;
+        if (is_null($value) || $value === '') {
+            return null;
         } else {
             return (float) $value;
         }
     }
 
     /** @throws UnexpectedValueException */
-    protected static function getParamAsBool(ServerRequest $request, string $name, bool $required = false, ?bool $default = null): ?bool
+    protected static function getParamAsBool(ServerRequest $request, string $name, bool $required = false): ?bool
     {
         $value = self::_getParam($request, $name, $required);
         if (is_null($value)) {
-            return $default;
+            return null;
         } else {
             return in_array(strtolower($value), [1, 'true', 'yes', 'on', 'oui', 'succeed'], true);
         }
@@ -129,7 +125,7 @@ abstract class SlimController
         $param = $request->getParam($name);
 
         if (is_null($param)) {
-            $header = $request->getHeaderLine($name);
+            $header = trim($request->getHeaderLine($name));
             if ($header === '') {
                 if ($required) {
                     throw new UnexpectedValueException(
@@ -195,18 +191,18 @@ abstract class SlimController
         return $query;
     }
 
-    protected static function genLinkHeader(int $countItem, int $perPage, int $page): string
+    protected static function genLinkHeader(int $countItem, Paging $paging): string
     {
         $linkTpl = '<?perPage=%d&page=%d>; rel=%s';
-        $linkList = [sprintf($linkTpl, $perPage, 1, 'first')];
-        $last = (int) ceil($countItem / $perPage);
-        if ($page > 1) {
-            $linkList[] = sprintf($linkTpl, $perPage, $page - 1, 'prev');
+        $linkList = [sprintf($linkTpl, $paging->perPage, 1, 'first')];
+        $last = (int) ceil($countItem / $paging->perPage);
+        if ($paging->page > 1) {
+            $linkList[] = sprintf($linkTpl, $paging->perPage, $paging->page - 1, 'prev');
         }
-        if ($page < $last) {
-            $linkList[] = sprintf($linkTpl, $perPage, $page + 1, 'next');
+        if ($paging->page < $last) {
+            $linkList[] = sprintf($linkTpl, $paging->perPage, $paging->page + 1, 'next');
         }
-        $linkList[] = sprintf($linkTpl, $perPage, $last, 'last');
+        $linkList[] = sprintf($linkTpl, $paging->perPage, $last, 'last');
 
         return implode(', ', $linkList);
     }

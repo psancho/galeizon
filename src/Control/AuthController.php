@@ -75,9 +75,9 @@ class AuthController extends SlimController
         }
 
         /** @var string $clientId */
-        $clientId = self::getParamAsString($request, 'client_id', false, '');
+        $clientId = self::getParamAsString($request, 'client_id') ?? '';
         /** @var string $redirectUri */
-        $redirectUri = self::getParamAsString($request, 'redirect_uri', false, '');
+        $redirectUri = self::getParamAsString($request, 'redirect_uri') ?? '';
 
         if ($clientId === '' || $redirectUri === '') {
             $body = sprintf($badRequestTemplate, $errorMessages['missing_redirect_uri_or_clientid']);
@@ -320,8 +320,7 @@ class AuthController extends SlimController
             $emailTemplate = Template::getInstance()->format('emailNoticeNewUser', Template::CORE);
         }
 
-        $token = self::getParamAsString($request, 'token', true, '');
-        assert(is_string($token));
+        $token = self::getParamAsString($request, 'token', true) ?? '';
         if ($token === '') {
             return $response->withStatus(StatusCode::HTTP_400_BAD_REQUEST);
         }
